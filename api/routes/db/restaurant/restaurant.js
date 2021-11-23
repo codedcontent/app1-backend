@@ -22,6 +22,7 @@ router.post("/menu", async (req, res) => {
       ...mealInfo,
       timestamp: FieldValue.serverTimestamp(),
       fileRef: `${uid}/${fileRef}`,
+      merchantId: uid,
     });
 
     // Return after adding
@@ -100,7 +101,18 @@ router.get("/menu/:restaurantId/:mealId", async (req, res) => {
 // Update a meals data
 router.patch("/menu/:restaurantId/:mealId", async (req, res) => {
   const { restaurantId, mealId } = req.params;
-  const { props } = req.body;
+  const { propsToUpdate } = req.body;
+
+  console.log(propsToUpdate);
+
+  if (Object.keys(propsToUpdate).length == 0) {
+    res.status(httpStatusCodes.HTTP_400_BAD_REQUEST).json({
+      error: {
+        message: "Empty object provided",
+      },
+    });
+    return;
+  }
 
   const menuRef = db.doc(
     `/users/${restaurantId}/restaurant/restaurantMenu/menu/${mealId}`
@@ -108,7 +120,7 @@ router.patch("/menu/:restaurantId/:mealId", async (req, res) => {
 
   try {
     const resp = menuRef.update({
-      ...props,
+      ...propsToUpdate,
     });
 
     res.status(httpStatusCodes.HTTP_200_OK).json({
@@ -116,6 +128,7 @@ router.patch("/menu/:restaurantId/:mealId", async (req, res) => {
       data: resp,
     });
   } catch (error) {
+    console.log(error);
     res.status(httpStatusCodes.HTTP_400_BAD_REQUEST).json({
       error: error,
     });
