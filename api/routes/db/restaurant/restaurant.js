@@ -7,6 +7,7 @@ const {
   FieldValue,
 } = require("firebase-admin/firestore");
 const httpStatusCodes = require("./../../../../constants/http_status_codes");
+const orders = require("./orders.js");
 
 // Add new items to the restaurants menu
 router.post("/menu", async (req, res) => {
@@ -134,5 +135,8 @@ router.patch("/menu/:restaurantId/:mealId", async (req, res) => {
     });
   }
 });
+
+// Orders
+router.use("/orders", orders);
 
 module.exports = router;
