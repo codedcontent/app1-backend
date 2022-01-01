@@ -7,6 +7,10 @@ const {
   FieldValue,
 } = require("firebase-admin/firestore");
 
+// Working with cart
+// The cart stores things that can be from various restaurants
+// When customer is checking out, server has to sort the cart items to their various restaurants and let them know of a new order
+
 // Get the users cart
 router.get("/:userUID", async (req, res) => {
   const { userUID } = req.params;
@@ -36,22 +40,25 @@ router.post("/:userUID", async (req, res) => {
   const { itemsToAddToCart } = req.body;
 
   // Get the number of items in cart
-  const itemCount = itemsToAddToCart
+  /* That is every single item added to the cart even if the same items appears twice */
+  const singleItemCount = itemsToAddToCart
     .map((item) => item.amount)
     .reduce((acc, item) => acc + item);
 
   // Cart Reference
-  const cartRef = db.collection(`users/${userUID}/user/userData/cart`);
+  const cartRef = db.doc(`users/${userUID}/user/userData/cart/cartItems`);
   // User data ref
   const userDataRef = db.doc(`users/${userUID}/user/userData`);
 
   try {
     // Add items to users cart
-    const resp = await cartRef.add({ cartItems: itemsToAddToCart });
-    // Increment cart count
-    await userDataRef.update({ itemsInCart: FieldValue.increment(itemCount) });
+    // const resp = await cartRef.add({ cartItems: itemsToAddToCart });
+    const resp = await cartRef.set({ cartItems: itemsToAddToCart });
 
-    res.json({ path: resp.id });
+    // Increment or decrement items in cart
+    await userDataRef.update({ itemsInCart: singleItemCount });
+
+    res.json({ writeTime: resp.writeTime });
   } catch (error) {
     res.json({ error });
   }
