@@ -7,6 +7,9 @@ const {
   FieldValue,
 } = require("firebase-admin/firestore");
 
+// Other routes
+const checkout = require("./checkout");
+
 // Working with cart
 // The cart stores things that can be from various restaurants
 // When customer is checking out, server has to sort the cart items to their various restaurants and let them know of a new order
@@ -63,5 +66,8 @@ router.post("/:userUID", async (req, res) => {
     res.json({ error });
   }
 });
+
+// Route for checkout requests
+router.use("/checkout", checkout);
 
 module.exports = router;

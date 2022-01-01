@@ -8,6 +8,7 @@ const new_user = require("./api/routes/db/user/new_user");
 const new_restaurant = require("./api/routes/db/restaurant/new_restaurant");
 const restaurant = require("./api/routes/db/restaurant/restaurant");
 const customers = require("./api/routes/db/customers/customers");
+const pay = require("./api/routes/pay/pay");
 
 // Initializations
 const app = express();
@@ -38,5 +39,8 @@ app.use("/restaurant", restaurant);
 
 // Customers route
 app.use("/customers", customers);
+
+// Pay - Anything related to money
+app.use("/pay", pay);
 
 app.listen(MY_PORT, () => console.log(`Server running on port ${MY_PORT}`));
